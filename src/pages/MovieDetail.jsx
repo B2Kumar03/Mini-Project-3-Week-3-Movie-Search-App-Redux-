@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useParams, Link } from "react-router-dom";
 
 const API_KEY = "ac2e9eec";
@@ -9,16 +8,29 @@ function MovieDetail() {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const {  movies } = useSelector((state) => state.movies);
-   console.log("Movies in MovieDetail:", movies); // Debugging line to check movies array
+  
+
   useEffect(() => {
-    movies.forEach((m) => {
-      if (m.imdbID === id) {
-        setMovie(m);
+    const fetchMovie = async () => {
+      try {
+        const response = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=${API_KEY}`);
+        const data = await response.json();
+
+        if (data.Response === "True") {
+          console.log("Movie Data:", data); // Debugging line to check movie data
+          setMovie(data);
+        } else {
+          setError(data.Error);
+        }
+      } catch (err) {
+        setError("Failed to fetch movie.");
+      } finally {
         setLoading(false);
       }
-    });
-  }, [id, movies]);
+    };
+
+    fetchMovie();
+  }, [id]);
 
   if (loading) return <div className="p-6 min-h-screen flex flex-col ">Loading...</div>;
   if (error) return <div className="p-6 text-red-500">{error}</div>;
@@ -36,6 +48,10 @@ function MovieDetail() {
           <h1 className="text-3xl font-bold mb-2">{movie.Title}</h1>
           <p><strong>Year:</strong> {movie.Year}</p>
           <p><strong>Genre:</strong> {movie.Genre}</p>
+          <p><strong>Director:</strong> {movie.Director}</p>
+          <p><strong>Actors:</strong> {movie.Actors}</p>
+         
+          <p><strong>Language:</strong> {movie.Language}</p>
           <p><strong>Plot:</strong> {movie.Plot}</p>
         </div>
       </div>
