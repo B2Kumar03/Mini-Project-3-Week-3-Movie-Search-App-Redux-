@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MovieCard from "../components/MovieCard";
 import { FaSpinner } from "react-icons/fa";
@@ -8,9 +8,14 @@ function Search() {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [btn, setBtn] = useState(0);
+  const inputRef=useRef(null);
 
   const dispatch = useDispatch();
   const { loading, error, movies,query: currentQuery } = useSelector((state) => state.movies);
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   // Handle API call when query or page changes
   useEffect(() => {
@@ -57,6 +62,7 @@ function Search() {
       <form onSubmit={(e) => e.preventDefault()} className="flex gap-2 mb-6">
         
         <input
+          ref={inputRef}
           type="text"
           placeholder="Search for a movie..."
           className="border p-2 w-full rounded"
